@@ -1,23 +1,56 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useRef, useCallback } from 'react';
+import useBookSearch from './hooks/useBookSearch';
 
 function App() {
+  const [query, setQuery] = useState('');
+  const [pageNumber, setPageNumber] = useState(1);
+
+  const { loading, error, books, hasMore } = useBookSearch(query, pageNumber);
+
+  const observer = useRef();
+  const lastBookElementRef = useCallback(
+    (selectedNode) => {
+      console.log(selectedNode);
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting && hasMore) {
+            // console.log(entries[0]);
+            setPageNumber((prevPageNumber) => prevPageNumber + 1);
+          }
+        },
+        {
+          root: null,
+          threshold: 0,
+          rootMargin: '300px',
+        }
+      );
+      if (selectedNode) observer.current.observe(selectedNode);
+    },
+    [loading, hasMore]
+  );
+
+  const handleSearch = (e) => {
+    // console.log(lastBookElementRef);
+    setQuery(e.target.value);
+    setPageNumber(1);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <input type="text" value={query} onChange={handleSearch} />
+      {books.map((book, index) => {
+        if (books.length === index + 1)
+          return (
+            <div ref={lastBookElementRef} key={book}>
+              {book}
+            </div>
+          );
+        return <div key={book}>{book}</div>;
+      })}
+      {loading && <div>Loading...</div>}
+      {error && <div>Error</div>}
     </div>
   );
 }
