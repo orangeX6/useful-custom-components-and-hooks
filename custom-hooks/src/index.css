@@ -1,0 +1,30 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: sans-serif;
+  margin: 10vh;
+  background-color: #232323;
+  color: white;
+  text-align: center;
+  /* align-items: center; */
+}
+
+input {
+  font: inherit;
+  padding: 0.35rem;
+  margin-bottom: 3rem;
+  border-radius: 4px;
+  background-color: #f0f0f0;
+  border: 1px solid #c1d1d1;
+  width: 50%;
+  font-size: 1.25rem;
+}
+
+button {
+  display: block;
+  margin: 2vh auto;
+  width: 60%;
+  /* justify-content: center; */
+}
